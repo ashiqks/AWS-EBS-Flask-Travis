@@ -1,0 +1,18 @@
+language: python
+python:
+  - "3.6"
+cache: pip
+install: 
+  - pip install -r requirements.txt
+script: 
+  - echo "Run successfully"
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: 
+    secure: "ACCESS_ID"
+  secret_access_key:
+    secure: "SECRET_KEY"
+  region: "us-east-2"  
+  app: "flask_new"
+  env: "FlaskNew-env"
+  bucket_name: "elasticbeanstalk-us-east-2-458375213711"

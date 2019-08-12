@@ -1,0 +1,3 @@
+Flask
+WerkZeug
+Jinja2
