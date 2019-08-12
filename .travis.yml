@@ -5,13 +5,13 @@ cache: pip
 install: 
   - pip install -r requirements.txt
 script: 
-  - echo "Runing successfully"
+  - echo "Running successfully"
 deploy:
   provider: elasticbeanstalk
   access_key_id: 
-    secure: "ACCESS_ID"
+    secure: "$ACCESS_ID"
   secret_access_key:
-    secure: "SECRET_KEY"
+    secure: "$SECRET_KEY"
   region: "us-east-2"  
   app: "flask_new"
   env: "FlaskNew-env"
