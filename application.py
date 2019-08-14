@@ -21,7 +21,7 @@ import boto3
 from flask import Flask
 
 
-
+"""
 # Create a S3 client
 client = boto3.client('s3')
 
@@ -135,7 +135,7 @@ def infer(data):
       #print(type(med.tolist()))
       result = np.argmax(outputs.detach().cpu().numpy())
       return result
-
+"""
 
 application = Flask(__name__)
 
@@ -148,11 +148,14 @@ def nlp():
     #temp = False
     string_data = json.loads(request.data)
     string = string_data['input_string']
+    """
     result = infer(string)
     if result:
       output = {'Text Review': 'Positive'}
     else:
       output = {'Text Review': 'Negative'}
+    """
+    output = {"Mess": string}
     return jsonify(output)
 
 if __name__ == '__main__':
