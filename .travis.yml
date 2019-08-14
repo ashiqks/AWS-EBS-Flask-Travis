@@ -6,10 +6,11 @@ install:
   - echo "Started"
 script: 
   - echo "Running successfully"
-before_deploy:
- - pip install torch==1.2.0+cpu torchvision==0.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 deploy:
   provider: elasticbeanstalk
+  script:
+  - pip install torch==1.2.0+cpu torchvision==0.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+  skip_cleanup: true
   access_key_id: 
     secure: "$ACCESS_ID"
   secret_access_key:
