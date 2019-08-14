@@ -5,7 +5,7 @@ cache: pip
 install: 
   - echo "Started"
 script: 
-  - pip install -r requirements
+  - pip install -r requirements.txt
 deploy:
   provider: elasticbeanstalk
   skip_cleanup: true
