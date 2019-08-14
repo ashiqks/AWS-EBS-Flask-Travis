@@ -15,6 +15,6 @@ deploy:
   secret_access_key:
     secure: "$SECRET_KEY"
   region: "us-east-2"  
-  app: "Bert_NLP_ElasticBeanstalk_Travis"
-  env: "BertNlpElasticbeanstalkTravis-env"
+  app: "flask_new"
+  env: "FlaskNew-env"
   bucket_name: "elasticbeanstalk-us-east-2-458375213711"
