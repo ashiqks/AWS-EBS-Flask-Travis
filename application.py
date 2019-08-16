@@ -9,6 +9,7 @@ Original file is located at
 
 # Import necessary packages
 import numpy as np
+"""
 import torch
 import torch.nn as nn
 import os
@@ -16,6 +17,7 @@ import copy
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertConfig
+"""
 import boto3
 
 from flask import Flask, request, jsonify
@@ -26,127 +28,25 @@ import json
 # Create a S3 client
 client = boto3.client('s3')
 
-BUCKET_NAME = 'elasticbeanstalk-us-east-2-458375213711'
+BUCKET_NAME = 's3-bucket-new-boto3-aws'
 
-MODEL_PATH = 'best_model.pth'
+FILE_PATH = 'word.txt'
 
-client.download_file(BUCKET_NAME, 'best_model_2.pth', MODEL_PATH)
+client.download_file(BUCKET_NAME, FILE_PATH, FILE_PATH)
 
-
-# Find the device information
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu:0')
-
-
-# Create a class inheriting from nn.Module of pytorch to fine tune the bert model
-class Bert_Classification(nn.Module):
-    def __init__(self, num_labels=2):
-        #Initialize parent class 
-        super().__init__()
-        # Assign the number of classes
-        self.num_labels = num_labels
-        # Create a BertModel with the weigths 'bert-base-uncased' and pass in the device information
-        self.bert = BertModel.from_pretrained('bert-base-uncased').to(device)
-        # Create a dropout layer with the parameter defined in the configuration of the BertConfig class 
-        self.dropout = nn.Dropout(config.hidden_dropout_prob).to(device)
-        # Create a linear layer with parameters from the config class and the number of classes
-        self.classifier = nn.Linear(config.hidden_size, self.num_labels).to(device)
-        # Initialize the weight of the linear classifier layer with xavier normal values
-        nn.init.xavier_normal_(self.classifier.weight).to(device)
+with open(FILE_PATH, 'r') as w:
+    m = w.readlines()
     
-  # Define the forward function takinng in the necessary arguments
-    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None):
-        # Get the output from the bert model with the corresponding inputs
-        _, output = self.bert(input_ids, token_type_ids, attention_mask, output_all_encoded_layers=None)
-        # Add the dropout layer to the bert layers
-        output = self.dropout(output)
-        # Add the linear classifier layer to the dropout  to get the outputs
-        logits = self.classifier(output)
-        return logits
-  
-
-
-# Create the configuration from the BertConfig class
-config = BertConfig(vocab_size_or_config_json_file=32000, hidden_size=768, num_hidden_layers=12, num_attention_heads=12, intermediate_size=3702)
-num_labels = 2
-# Instantiate the custom bert model
-model = Bert_Classification(num_labels)
-
-model.load_state_dict(torch.load(MODEL_PATH))
-model.eval()
-
-# Create a tokenzier object from the BertTokenizer with the weights 'bert-base-uncased'
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-
-max_seq_len = 256
-
-
-# Define the dataset class inheriting from the Dataset class of pytorch to efficiently to iterate the inputs
-class Text_Dataset(Dataset):
-  
-    def __init__(self, input_list, transform=None):
-        self.input_list = input_list
-        self.transform = transform
-  
-  # Create a __getitem__ magic method to tokenize the independent variable using the tokenize method of bert tokenizer
-    def __getitem__(self, index):
-        tokenized_text = tokenizer.tokenize(self.input_list[0][index])
-    # Trim if the length of the tokens is greater than a predefined length 
-        if len(tokenized_text) > max_seq_len:
-            tokenized_text = tokenized_text[:max_seq_len]
-    
-    # Convert the tokens to the corresponding token ids of bert tokenizer
-        token_ids = tokenizer.convert_tokens_to_ids(tokenized_text)
-        attention_mask = [1] * len(token_ids)
-    # Padd the above the list to a fixed length if the length is smaller than that of the predefined length
-        padding = [0] * (max_seq_len - len(token_ids))
-        token_ids += padding
-        attention_mask += padding
-    # Convert to torch tensors
-        token_ids = torch.tensor(token_ids)
-        attention_mask = torch.tensor(attention_mask)
-    
-        return token_ids, attention_mask
-   
-  # Create the __len__ magic method to return the length of the dataset  
-    def __len__(self):
-        return len(self.input_list[0])
-  
-  
-def load_data(data):
-    test_list = [[data], []]
-
-  # Create the train and test dataset using the Text_Dataset class
-
-    test_data = Text_Dataset(test_list)
-
-    dataloader_infer = DataLoader(test_data, batch_size=1, num_workers=1)
-    return dataloader_infer
-  
-
-  
-def infer(data):
-    dataloader = load_data(data)
-    for inputs, attention_mask in dataloader:
-      # Load the device information to the inputs
-        inputs = inputs.to(device)
-        attention_mask = attention_mask.to(device)
-        outputs = model(inputs, attention_mask=attention_mask)
-      # Softmax the output
-        outputs = F.softmax(outputs, dim=1)
-        #med = outputs.detach().cpu().numpy()
-      #print(med.tolist())
-      #print(type(med.tolist()))
-        result = np.argmax(outputs.detach().cpu().numpy())
-        return result
-
+m_dict = {"Content String": m}
 
 application = Flask(__name__)
 
 @application.route('/', methods=['GET', 'POST'])
 def nlp():
     if request.method == 'GET':
-        return {'Message': 'Successfully Deployed. Ready for serving'}
-  
+        return jsonify(m_dict)
+        #return {'Message': 'Successfully Deployed. Ready for serving'}
+"""  
     if request.method == 'POST':
     #temp = False
         string_data = json.loads(request.data)
@@ -158,7 +58,7 @@ def nlp():
             output = {'Text Review': 'Positive'}
         else:
             output = {'Text Review': 'Negative'}
-    
+ """   
         
 
 if __name__ == '__main__':
