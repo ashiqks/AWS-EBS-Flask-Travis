@@ -3,7 +3,7 @@ python:
   - "3.6"
 cache: pip
 install: 
-  - echo "Started"
+  - echo "Started new"
 script: 
   - pip install -r requirements.txt
 deploy:
