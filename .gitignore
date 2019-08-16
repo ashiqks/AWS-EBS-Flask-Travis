@@ -1,7 +1,7 @@
 __pycache__ 
-pys.txt
-.ipynb_checkpoints/
+old_travis.yml
+./.ipynb_checkpoints/
 Un*
 word.txt
 pys.py
-old*
+

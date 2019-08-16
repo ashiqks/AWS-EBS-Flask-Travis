@@ -34,4 +34,4 @@ def nlp():
         return jsonify(m_dict)
 
     if __name__ == '__main__':
-    application.run()
+        application.run()
